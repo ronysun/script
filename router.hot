@@ -1,0 +1,32 @@
+heat_template_version: 2013-05-23
+
+description:
+  create some net and router
+
+parameters:
+
+resources:
+{% for x in xlist %}
+  {{ x }}_private_net:
+    type: OS::Neutron::Net
+    properties:
+      name: heat1_net
+
+  {{ x }}_private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: {{ x }}_private_net }
+      cidr: 11.0.0.0/8
+
+  {{ x }}_router:
+    type: OS::Neutron::Router
+    properties:
+      external_gateway_info:
+        network: 5048-ext-net 
+
+  {{ x }}_router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_resource: {{ x }}_router }
+      subnet_id: { get_resource: {{ x }}_private_subnet }
+{% endfor %}
