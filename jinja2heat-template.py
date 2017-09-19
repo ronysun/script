@@ -1,13 +1,31 @@
 import jinja2
+import argparse
 import sys
-f = open(sys.argv[1])
-heat_template = f.read()
-xlist = [x for x in range(250)]
-print heat_template
-print "============================="
-compiled_template = jinja2.Template(heat_template)
-print compiled_template
-rendered_template = compiled_template.render({"xlist": xlist})
-tmp_file = file("tmp.hot", mode="w")
-tmp_file.write(rendered_template)
-tmp_file.close
+
+
+def jinja2_to_heat(template_file, output_file, arg_list):
+    f = file(template_file)
+    compiled_template = jinja2.Template(f.read())
+    rendered_template = compiled_template.render({"xlist": arg_list})
+    tmp_file = file(output_file, mode="w")
+    tmp_file.write(rendered_template)
+    tmp_file.close
+    print "output file: %s" % tmp_file.name
+
+
+def genarater_list(number):
+    arg_list = [arg for arg in range(number)]
+    return arg_list
+
+
+def command():
+    parse = argparse.ArgumentParser()
+    parse.add_argument("template_file")
+    parse.add_argument('-o', default='tmp.hot', help="output file", dest="output_file", required=False)
+    parse.add_argument('-c', dest="resource_num", type=int, required=True)
+    return parse.parse_args()
+
+
+args = command()
+arg_list = genarater_list(args.resource_num)
+jinja2_to_heat(args.template_file, args.output_file, arg_list)
