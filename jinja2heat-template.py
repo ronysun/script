@@ -6,7 +6,7 @@ import sys
 def jinja2_to_heat(template_file, output_file, arg_list):
     f = file(template_file)
     compiled_template = jinja2.Template(f.read())
-    rendered_template = compiled_template.render({"xlist": arg_list})
+    rendered_template = compiled_template.render({"arg_list": arg_list})
     tmp_file = file(output_file, mode="w")
     tmp_file.write(rendered_template)
     tmp_file.close
