@@ -1,32 +1,36 @@
 heat_template_version: 2013-05-23
 
 description:
-  create some net and router
+  create some net and router,for test how many router can be create in openstack
 
 parameters:
+  ext_net:
+    type: string
+    description: external net for router
+    defualt: ext_net
 
 resources:
-{% for x in xlist %}
-  {{ x }}_private_net:
+{% for arg in arg_list %}
+  {{ arg }}_private_net:
     type: OS::Neutron::Net
     properties:
       name: heat1_net
 
-  {{ x }}_private_subnet:
+  {{ arg }}_private_subnet:
     type: OS::Neutron::Subnet
     properties:
-      network_id: { get_resource: {{ x }}_private_net }
-      cidr: 11.0.0.0/8
+      network_id: { get_resource: {{ arg }}_private_net }
+      cidr: 11.0.0.0/24
 
-  {{ x }}_router:
+  {{ arg }}_router:
     type: OS::Neutron::Router
     properties:
       external_gateway_info:
-        network: 5048-ext-net 
+        network: { get_param: ext_net}
 
-  {{ x }}_router_interface:
+  {{ arg }}_router_interface:
     type: OS::Neutron::RouterInterface
     properties:
-      router_id: { get_resource: {{ x }}_router }
-      subnet_id: { get_resource: {{ x }}_private_subnet }
+      router_id: { get_resource: {{ arg }}_router }
+      subnet_id: { get_resource: {{ arg }}_private_subnet }
 {% endfor %}
