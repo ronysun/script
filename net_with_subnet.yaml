@@ -1,0 +1,17 @@
+heat_template_version: 2013-05-23
+
+description:
+  create a router and some net ,for test a router can associate how many nic
+
+parameters:
+  private_net:
+    type: string
+
+resources:
+{% for arg in arg_list %}
+  {{ arg }}_private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_param: private_net }
+      cidr: 13.{{ arg // 254 }}.{{ arg % 254 }}.0/24
+{% endfor %}

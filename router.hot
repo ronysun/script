@@ -15,19 +15,16 @@ resources:
     type: OS::Neutron::Net
     properties:
       name: heat1_net
-
   {{ arg }}_private_subnet:
     type: OS::Neutron::Subnet
     properties:
       network_id: { get_resource: {{ arg }}_private_net }
       cidr: 11.0.0.0/24
-
   {{ arg }}_router:
     type: OS::Neutron::Router
     properties:
       external_gateway_info:
         network: { get_param: ext_net}
-
   {{ arg }}_router_interface:
     type: OS::Neutron::RouterInterface
     properties:

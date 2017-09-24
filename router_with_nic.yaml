@@ -1,0 +1,32 @@
+heat_template_version: 2013-05-23
+
+description:
+  create a router and some net ,for test a router can associate how many nic
+
+parameters:
+  router:
+    type: string
+
+resources:
+{% for arg in arg_list %}
+  {{ arg }}_private_net:
+    type: OS::Neutron::Net
+    properties:
+      name: {{ arg }}_private_net
+  {{ arg }}_private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: {{ arg }}_private_net }
+      cidr: 16.{{ arg // 254 }}.{{ arg % 254 }}.0/24
+  {{ arg }}_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_resource: {{ arg }}_private_net }
+      fixed_ips:
+        - subnet_id: { get_resource: {{ arg }}_private_subnet }
+  {{ arg }}_router_interface:
+    type: OS::Neutron::RouterInterface
+    properties:
+      router_id: { get_param: router}
+      port: { get_resource: {{ arg }}_port }
+{% endfor %}

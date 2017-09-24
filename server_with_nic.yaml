@@ -1,0 +1,46 @@
+heat_template_version: 2013-05-23
+
+description:
+  create a instance and some net ,for test a instance can associate how many nic
+
+parameters:
+  ext_net:
+    type: string
+    description: external net for router
+    default: ext_net
+  availability_zone:
+    type: string
+    default: default_availability_zone
+  image_id:
+    type: string
+  instance_type:
+    type: string
+
+resources:
+  instance:
+    type: OS::Nova::Server
+    properties:
+      availability_zone: { get_param: availability_zone }
+      metadata:
+        admin_pass: aaaaaa
+      image: { get_param: image_id}
+      flavor: { get_param: instance_type }
+      networks:
+        - port: { get_resource: 0_port }
+{% for arg in arg_list %}
+  {{ arg }}_private_net:
+    type: OS::Neutron::Net
+    properties:
+      name: heat1_net
+  {{ arg }}_private_subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network_id: { get_resource: {{ arg }}_private_net }
+      cidr: 11.{{ arg }}.0.0/24
+  {{ arg }}_port:
+    type: OS::Neutron::Port
+    properties:
+      network_id: { get_resource: {{ arg }}_private_net }
+      fixed_ips:
+        - subnet_id: { get_resource: {{ arg }}_private_subnet }
+{% endfor %}
