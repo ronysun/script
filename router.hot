@@ -4,27 +4,18 @@ description:
   create some net and router,for test how many router can be create in openstack
 
 parameters:
-  ext_net:
-    type: string
-    description: external net for router
-    defualt: ext_net
 
 resources:
 {% for arg in arg_list %}
   {{ arg }}_private_net:
     type: OS::Neutron::Net
-    properties:
-      name: heat1_net
   {{ arg }}_private_subnet:
     type: OS::Neutron::Subnet
     properties:
       network_id: { get_resource: {{ arg }}_private_net }
-      cidr: 11.0.0.0/24
+      cidr: zzz.{{ arg // 254 }}.{{ arg % 254 }}.0/24
   {{ arg }}_router:
     type: OS::Neutron::Router
-    properties:
-      external_gateway_info:
-        network: { get_param: ext_net}
   {{ arg }}_router_interface:
     type: OS::Neutron::RouterInterface
     properties:
