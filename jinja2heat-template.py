@@ -14,7 +14,7 @@ def jinja2_to_heat(template_file, output_file, arg_list):
 
 
 def genarater_list(number):
-    arg_list = [arg for arg in range(number)]
+    arg_list = [arg for arg in range(1, number+1)]
     return arg_list
 
 
