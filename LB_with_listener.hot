@@ -1,0 +1,19 @@
+heat_template_version: 2013-05-23
+
+description:
+  create a LB and some listener ,for test a LB can associate how many listener
+
+parameters:
+  LB:
+    type: string
+
+resources:
+{% for arg in arg_list %}
+  {{ arg }}_Listener:
+    type: OS::Neutron::LBaaS::Listener
+    properties:
+      name: {{ arg }}_Listener
+      protocol: TCP
+      protocal_port: {{ arg }}
+      loadbalancer: { get_param: LB}
+{% endfor %}
