@@ -1,0 +1,150 @@
+openapi: 3.0.0
+info:
+  title: YUN OI API 文档
+  version: 2.0.0-oas3
+  description: 这是关于的 API 文档，仅做参考。
+  contact: {}
+servers:
+  - url: xxx
+    description: 生产环境
+  - url: xxx
+    description: 测试环境
+  - url: https://virtserver.swaggerhub.com/ronysun/get-vm/1.0.0
+tags:
+  - name: oi
+    description: 所有关于oi服务的api
+paths:
+  /api/v1/inventory/list:
+    get:
+      tags:
+        - oi
+      description: 获取指定条件的虚拟机列表，并返回部分性能指标数据。
+      parameters:
+        - name: platform
+          in: query
+          required: true
+          description: 资源所属的平台
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          description: 资源类型
+          schema:
+            type: string
+        - in: query
+          name: host
+          required: false
+          description: 获取某节点上的资源
+          schema:
+            type: string
+        - in: query
+          name: organization
+          required: false
+          description: 获取某节点上的资源
+          schema:
+            type: string
+        - in: query
+          name: name_like
+          required: false
+          description: 支持按名字搜索
+          schema:
+            type: string
+        - in: query
+          name: cluster
+          required: false
+          description: cluster的uuid
+          schema:
+            type: string
+        - in: query
+          name: page
+          required: false
+          description: 取第几页的资源，一页10个
+          schema:
+            type: string
+        - in: query
+          name: order
+          required: false
+          description: 排序方式
+          schema:
+            type: string
+        - in: query
+          name: order_by
+          required: false
+          description: 排序指标，不填的话默认是名字
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: object
+                description: 虚机列表
+                items:
+                  $ref: '#/components/schemas/InventoryList'
+        '400':
+          description: 错误的请求参数。返回bad request
+  /api/v1/inventory/enum:
+    get:
+      tags:
+        - oi
+      description: 列举指定范围内的资源清单，返回信息包括资源名称，资源uuid，名字，tag信息。
+      parameters:
+        - name: platform
+          in: query
+          required: true
+          description: 资源所属的平台
+          schema:
+            type: string
+        - name: type
+          in: query
+          required: true
+          description: 资源类型
+          schema:
+            type: string
+        - in: query
+          name: host
+          required: false
+          description: 此参数仅适用type=vm
+          schema:
+            type: string
+        - in: query
+          name: organization
+          required: false
+          description: 所属集群的uuid
+          schema:
+            type: string
+        - in: query
+          name: namespace
+          required: false
+          description: 此参数仅适用type=pod
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 成功
+          content:
+            application/json:
+              schema:
+                type: array
+                description: 资源清单
+                items:
+                  $ref: '#/components/schemas/InventoryList'
+        '400':
+          description: 错误的请求参数。返回bad request
+components: # 通用组件，可定义复用的实体、响应、请求以及授权信息等
+  schemas: # 实体信息
+    InventoryList: # 实体 key
+      title: InventoryList                                                            # 名称
+      type: object                                                        # 实体数据结构类型
+      description: 虚机列表                                    # 描述信息
+      properties: # 实体参数，可多条
+        host_list:
+          type: string
+          description: 返回的虚机列表
+        total:
+          type: integer
+          format: int64
+          description: 返回的虚机总数
